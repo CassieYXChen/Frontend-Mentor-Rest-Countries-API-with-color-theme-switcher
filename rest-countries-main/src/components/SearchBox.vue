@@ -1,6 +1,26 @@
 <script setup>
-defineProps(["modelValue"]);
-defineEmits(["update:modelValue", "clearSearch"]);
+import { defineProps, defineEmits } from 'vue';
+import { debounce } from 'lodash';
+
+// Define props
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: '',
+  },
+});
+
+// Define emits
+const emit = defineEmits(['update:modelValue', 'clearSearch']);
+
+// Debounced input handler
+const emitInput = (value) => {
+  emit('update:modelValue', value);
+};
+
+const debouncedInput = debounce((event) => {
+  emitInput(event.target.value);
+}, 800);
 </script>
 
 <template>
@@ -11,7 +31,7 @@ defineEmits(["update:modelValue", "clearSearch"]);
       class="search-bar dark:bg-dark-blue dark:text-white"
       placeholder="Search for a country..."
       :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="debouncedInput"
     />
   </div>
 </template>
